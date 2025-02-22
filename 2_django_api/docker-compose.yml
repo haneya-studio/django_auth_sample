@@ -1,0 +1,16 @@
+services: 
+  spa:
+    image: httpd:latest
+    container_name: auth-front
+    ports:
+      - '3000:80'
+    volumes:
+      - ./spa:/usr/local/apache2/htdocs/
+
+  api:
+    build: ./api
+    container_name: auth-api
+    volumes:
+      - ./api/myapp:/app
+    ports:
+      - "8000:8000"

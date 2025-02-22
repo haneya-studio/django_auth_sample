@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Buttons</title>
+</head>
+<body>
+    <div>APIからの応答をconsoleに出力します</div>
+    <button id="loginButton">Login</button>
+    <button id="getUsersButton">Get Users</button>
+    <button id="logoutButton">Logout</button>
+
+    <script>
+        const baseURL = 'http://localhost/api/'
+
+        async function getCSRF() {
+            name = 'csrftoken'
+            let token = null
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';')
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim()
+                    if (cookie.startsWith(name + '=')) {
+                        token = decodeURIComponent(cookie.substring(name.length + 1))
+                        break
+                    }
+                }
+            }
+            return token
+        }
+       
+        document.getElementById("loginButton").addEventListener("click", async () => {
+            try {
+                const url = `${baseURL}login/`
+                console.log(url)
+                const token = await getCSRF()
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        'X-CSRFToken': token,
+                    },
+                    body: JSON.stringify({
+                        username: "",
+                        password: ""
+                    }),
+                    credentials: "include",
+                });
+                const data = await response.json();
+                console.log("Login Response:", data);
+            } catch (error) {
+                console.error("Login Error:", error);
+            }
+        });
+
+        document.getElementById("getUsersButton").addEventListener("click", async () => {
+            try {
+                const url = `${baseURL}users/`
+                const token = await getCSRF()
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: {
+                      "Content-Type": "application/json",
+                      'X-CSRFToken': token,
+                    },
+                    credentials: "include",
+                });
+                const data = await response.json();
+                console.log("Users Response:", data);
+            } catch (error) {
+                console.error("Users Fetch Error:", error);
+            }
+        });
+
+        document.getElementById("logoutButton").addEventListener("click", async () => {
+            try {
+                const url = `${baseURL}logout/`
+                console.log(url)
+                const token = await getCSRF()
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        'X-CSRFToken': token,
+                    },
+                    credentials: "include",
+                });
+                const data = await response.json();
+                console.log("Logout Response:", data);
+            } catch (error) {
+                console.error("Logout Error:", error);
+            }
+        });
+    </script>
+</body>
+</html>

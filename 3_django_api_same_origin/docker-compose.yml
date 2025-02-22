@@ -1,0 +1,23 @@
+services: 
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - api
+      - front
+
+  front:
+    image: httpd:latest
+    container_name: auth-front-same-origin
+    volumes:
+      - ./spa:/usr/local/apache2/htdocs/
+
+  api:
+    build: ./api
+    container_name: auth-api-same-origin
+    volumes:
+      - ./api/myapp:/app
+
